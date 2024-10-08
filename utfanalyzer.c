@@ -33,6 +33,35 @@ int32_t capitalize_ascii(char str[]){
     //returns the number of characters capitalized
     return charsCapped;
 }
+//firstfour function from class
+char firstfour( char c){
+	return c & 0b11110000;
+}
+
+
+int32_t width_from_start_byte(char start_byte){
+    char c = firstfour(start_byte);
+    //uses the first four function from class to check if the
+    //first four characters are the identifiers
+    if(c == 0b11000000){
+        return 2;
+    }
+    else if(c == 0b11100000){
+        return 3;
+    }
+    else if(c == 0b11110000){
+        return 4;
+    }
+    else if((start_byte & 0b10000000) == 0){
+        return 1;
+    }
+
+    return -1;
+}
+
+int32_t utf8_strlen(char str[]){
+    
+}
 
 
 
@@ -46,6 +75,9 @@ int main(){
     char str[] = "abcd";
     ret = capitalize_ascii(str);
     printf("Capitalized String: %s\nCharacters updated: %d\n", str, ret);
+
+    char s[] = "Héy"; // same as { 'H', 0xC3, 0xA9, 'y', 0 },   é is start byte + 1 cont. byte
+    printf("Width: %d bytes\n", width_from_start_byte(s[1])); // start byte 0xC3 indicates 2-byte sequence
 
 
     return 0;
