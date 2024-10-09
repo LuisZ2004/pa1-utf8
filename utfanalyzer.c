@@ -34,13 +34,13 @@ int32_t capitalize_ascii(char str[]){
     return charsCapped;
 }
 //firstfour function from class
-char firstfour( char c){
+int32_t firstfour( char c){
 	return c & 0b11110000;
 }
 
 
 int32_t width_from_start_byte(char start_byte){
-    char c = firstfour(start_byte);
+    int c = firstfour(start_byte);
     //uses the first four function from class to check if the
     //first four characters are the identifiers
     if(c == 0b11000000){
