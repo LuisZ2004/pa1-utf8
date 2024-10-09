@@ -60,7 +60,7 @@ int32_t width_from_start_byte(char start_byte){
 }
 
 int32_t utf8_strlen(char str[]){
-    
+    return 0;
 }
 
 
