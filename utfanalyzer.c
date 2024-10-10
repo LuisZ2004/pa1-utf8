@@ -28,8 +28,6 @@ int32_t capitalize_ascii(char str[]){
             chars_capped +=1;
         }
     }
-    //prints the string that is now capitalized
-    printf("%s", str);
     //returns the number of characters capitalized
     return chars_capped;
 }
@@ -133,9 +131,13 @@ int32_t codepoint_index_to_byte_index(char str[], int32_t cpi){
 
 
 void utf8_substring(char str[], int32_t cpi_start, int32_t cpi_end, char result[]){
+    //start and end of the byte indexes 
     int byte_index_start = codepoint_index_to_byte_index(str,cpi_start);
     int byte_index_end = codepoint_index_to_byte_index(str,cpi_end);
+    //end of the substring
     int end = byte_index_end - byte_index_start;
+    
+    //checks to make sure that cpi start is less than end and both are positive
     if(cpi_start >= 0 && cpi_end >= 0 && cpi_start < cpi_end){
         for (int i = 0; i < end; i++) {
             result[i] = str[byte_index_start + i];
@@ -147,34 +149,98 @@ void utf8_substring(char str[], int32_t cpi_start, int32_t cpi_end, char result[
     }
 }
 
+int32_t codepoint_at(char str[], int32_t cpi){
+    int32_t codepoint = 0;
+    int byte_index = codepoint_index_to_byte_index(str,cpi);
+    int32_t width = width_from_start_byte(str[byte_index]);
+
+    if(width == 1){
+        return str[byte_index];
+    }
+    else if(width == 2){
+        codepoint = codepoint = ((str[byte_index] & 0b00011111) << 6) | (str[byte_index + 1] & 0b00111111);
+        return codepoint;
+    }
+    else if(width == 3){
+        codepoint =((str[byte_index] & 0b00001111) << 12) | ((str[byte_index + 1] & 0b00111111) << 6) |  (str[byte_index + 2] & 0b00111111);
+        return codepoint;
+    }
+    else if(width == 4){
+        codepoint = ((str[byte_index] & 0b00000111) << 18) |
+                            ((str[byte_index + 1] & 0b00111111) << 12) |
+                            ((str[byte_index + 2] & 0b00111111) << 6) |
+                            (str[byte_index + 3] & 0b00111111);
+        return codepoint;
+    }
+    return -1;
+}
+
+char is_animal_emoji_at(char str[], int32_t cpi){
+    int32_t codepoint = codepoint_at(str,cpi);
+    if ((codepoint >= 0x1F400 && codepoint <= 0x1F43E) || (codepoint >= 0x1F980 && codepoint <= 0x1F99F)) {
+        return 1;
+    }
+    return 0;
+    
+}
 
 
 
+int main(){ 
+    char get_input_string[] = "Enter a UTF-8 Encoded String: ";
+    char input_string[100];
+    printf("%s",get_input_string);
+    fgets(input_string,100,stdin);
+    
+    int8_t length = strlen(input_string);
+    if(length > 0 && input_string[length-1] == '\n'){
+        input_string[length - 1] ='\0';
+    }
+    
+    
+    char is_true[6] = "False";
+
+    if(is_ascii(input_string) != 0){
+        strcpy(is_true, "True");
+    }
+    printf("Valid ASCII: %s\n",is_true);
+
+    capitalize_ascii(input_string);
+    printf("Uppercased ASCII: %s\n",input_string );
+
+    int byte_length = strlen(input_string);
+    printf("Length in bytes %d\n", byte_length);
+    int32_t utf8_string_length = utf8_strlen(input_string);
+    printf("Number of Codepoints: %d\n",utf8_strlen(input_string));
+
+    int byte_index = 0;
+    printf("Bytes per codepoint: ");
+    for (int i = 0; i< utf8_string_length; i++){
+        int width = width_from_start_byte(input_string[byte_index]);
+        printf("%d ", width);
+        byte_index += width;
+    }
+    printf("\n");
 
 
-int main(){
+    char substring [100];
+    utf8_substring(input_string,0,6, substring);
+    printf("Substring of the first 6 code points: \"%s\"\n", substring);
 
-    //all from the assignment used to test code
-    printf("Is abcd ASCII? %d\n", is_ascii("abcd"));
-    printf("Is 🔥 ASCII? %d\n", is_ascii("🔥"));
+    printf("Code Points as decimal numbers: ");
+    for (int i = 0; i < utf8_string_length; i++){
+        printf("%d ",codepoint_at(input_string, i));
+    }
+    printf("\n");
 
-    int32_t ret = 0;
-    char str[] = "abcd";
-    ret = capitalize_ascii(str);
-    printf("Capitalized String: %s\nCharacters updated: %d\n", str, ret);
-
-    char s[] = "Héy"; // same as { 'H', 0xC3, 0xA9, 'y', 0 },   é is start byte + 1 cont. byte
-    printf("Width: %d bytes\n", width_from_start_byte(s[1])); // start byte 0xC3 indicates 2-byte sequence
-    char stri[] = "Joséph";
-    printf("Length of string %s is %d\n", stri, utf8_strlen(stri));  // 6 codepoints, (even though 7 bytes)
-
-    char strig[] = "Joséph";
-    int32_t idx = 4;
-    printf("Codepoint index %d is byte index %d\n", idx, codepoint_index_to_byte_index("Joséph", idx));
-
-    char result[17];
-    utf8_substring("🦀🦮🦮🦀🦀🦮🦮", 3, 7, result);
-    printf("Substring: %s\n", result); // these emoji are 4 bytes long
-
+    printf("Animal Emojis: ");
+    for (int i = 0; i < utf8_string_length; i++){
+        if(is_animal_emoji_at(input_string,i)){
+            char emojis[5];
+            utf8_substring(input_string,i, i+1, emojis);
+            printf("%s", emojis);
+        }
+    }
+    printf("\n");
     return 0;
 }
