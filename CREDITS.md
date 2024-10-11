@@ -13,3 +13,6 @@ I also asked chatgpt to explain how the left shifting works and how the code wou
 it removes the identifier bits, reads the important part and then saves the value by left shifting the bits into codepoint which is a 32 bit int and then repeats it for the following bytes.
 
 also for my capitalize ascii function i had written it almost exactly how it is now except when I ran it it did not work. I asked chatgpt and it told me to use unsigned ints and this is because ascii characters are unsigned
+
+this is how i added quotes in the strings https://stackoverflow.com/questions/11772291/how-can-i-print-a-quotation-mark-in-c
+

@@ -167,7 +167,7 @@ int main(){
 
 
     capitalize_ascii(capped_string);
-    printf("Uppercased ASCII: %s\n",capped_string );
+    printf("Uppercased ASCII: \"%s\"\n",capped_string );
 
     //byte_length is used a couple times for loops so having it set improves efficiency a little
     int byte_length = strlen(input_string);
