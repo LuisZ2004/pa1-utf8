@@ -163,7 +163,7 @@ int main(){
     if(is_ascii(input_string) != 0){
         strcpy(is_true, "true");
     }
-    printf("\n Valid ASCII: %s\n",is_true);
+    printf("\nValid ASCII: %s\n",is_true);
 
 
     capitalize_ascii(capped_string);
@@ -171,7 +171,7 @@ int main(){
 
     //byte_length is used a couple times for loops so having it set improves efficiency a little
     int byte_length = strlen(input_string);
-    printf("Length in bytes %d\n", byte_length);
+    printf("Length in bytes: %d\n", byte_length);
     int32_t utf8_string_length = utf8_strlen(input_string);
     printf("Number of code points: %d\n",utf8_strlen(input_string));
 
