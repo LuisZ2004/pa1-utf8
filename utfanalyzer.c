@@ -200,7 +200,7 @@ int main(){
     }
     printf("\n");
 
-    printf("Animal Emojis: ");
+    printf("Animal emojis: ");
     for (int i = 0; i < utf8_string_length; i++){
         //checks if it is animal emoji
         if(is_animal_emoji_at(input_string,i)){
