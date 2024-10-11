@@ -142,7 +142,7 @@ int8_t is_animal_emoji_at(char str[], int32_t cpi){
 
 
 int main(){ 
-    char get_input_string[] = "Enter a UTF-8 Encoded String: ";
+    char get_input_string[] = "Enter a UTF-8 encoded string: ";
     char input_string[100];
     printf("%s",get_input_string);
     fgets(input_string,100,stdin);
@@ -173,10 +173,10 @@ int main(){
     int byte_length = strlen(input_string);
     printf("Length in bytes %d\n", byte_length);
     int32_t utf8_string_length = utf8_strlen(input_string);
-    printf("Number of Codepoints: %d\n",utf8_strlen(input_string));
+    printf("Number of code points: %d\n",utf8_strlen(input_string));
 
     int byte_index = 0;
-    printf("Bytes per codepoint: ");
+    printf("Bytes per code point: ");
     //iterates throughout each codepoints and and finds the width
     //adds the value of width in case it was a multibyte character
     for (int i = 0; i< utf8_string_length; i++){
@@ -193,7 +193,7 @@ int main(){
     printf("Substring of the first 6 code points: \"%s\"\n", substring);
 
 
-    printf("Code Points as decimal numbers: ");
+    printf("Code points as decimal numbers: ");
     for (int i = 0; i < utf8_string_length; i++){
         //codepoints are returned as 32 bit int so nothing else is needed
         printf("%d ",codepoint_at(input_string, i));
