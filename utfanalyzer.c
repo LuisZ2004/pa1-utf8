@@ -163,7 +163,7 @@ int main(){
     if(is_ascii(input_string) != 0){
         strcpy(is_true, "true");
     }
-    printf("Valid ASCII: %s\n",is_true);
+    printf("\n Valid ASCII: %s\n",is_true);
 
 
     capitalize_ascii(capped_string);
