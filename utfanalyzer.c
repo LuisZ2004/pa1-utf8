@@ -37,96 +37,49 @@ int32_t firstfour( char c){
 }
 
 
-int32_t width_from_start_byte(char start_byte){
-    int c = firstfour(start_byte);
-    //uses the first four function from class to check if the
-    //first four characters are the identifiers
-    if(c == 0b11000000){
-        //returns the length based on the first four bits
+int32_t width_from_start_byte(char start_byte) {
+    //checks the identifier bits of the byte and returns the width
+    //changed from previous where it was only called once for debugging purposes
+    if ((start_byte & 0b10000000) == 0) {
+        return 1;
+    } else if ((start_byte & 0b11100000) == 0b11000000) {
         return 2;
-    }
-    else if(c == 0b11100000){
+    } else if ((start_byte & 0b11110000) == 0b11100000) {
         return 3;
-    }
-    else if(c == 0b11110000){
+    } else if ((start_byte & 0b11111000) == 0b11110000) {
         return 4;
     }
-    else if((start_byte & 0b10000000) == 0){
-        return 1;
-    }
-
-    return -1;
+    //if it was not recognized return -1
+    return -1; 
 }
 
 int32_t utf8_strlen(char str[]){
     //finds the length of the string
-    int c = strlen(str);
+    int byte_length = strlen(str);
     //get the number of codepoints
     int num_code_points = 0;
-    for (int i=0; i < c; i++){
-        int character = firstfour(str[i]);
-        //checks if the it is a standalone byte
-        if ((str[i] & 0b10000000) == 0) {
-            num_code_points += 1;
-        }
-        //checks if its a 2 byte char
-        else if(character == 0b11000000){
-            num_code_points +=1;
-            //adds one to i so it skips the next one
-            i += 1;
-        }
-        //checks if its a 3 byte char
-        else if(character == 0b11100000){
-            num_code_points +=1;
-            //skips the next 2
-            i += 2;
-        }
-        //checks if its a 4 byte char
-        else if(character == 0b11110000){
-            num_code_points +=1;
-            //skips the next 3
-            i += 3;
-        }
-        //if it is not recognized it returns -1
-        else{
-            return -1;
+    for (int i=0; i < byte_length; i++){
+        int width = width_from_start_byte(str[i]);
+        if(width > 0){
+            //if width is greater than 0 then adds one to the number of codepoints
+            // also adds width -1 to i to iterate and skip some of the helper bytes
+            num_code_points ++;
+            i += (width -1);
         }
     }
     return num_code_points;
 }
 
-int32_t codepoint_index_to_byte_index(char str[], int32_t cpi){
+int32_t codepoint_index_to_byte_index(char str[], int32_t cpi) {
     int byte_index = 0;
-    for(int i = 0; i < cpi; i++){
-        int character = firstfour(str[i]);
-        //checks if the it is a standalone byte
-        if ((str[i] & 0b10000000) == 0) {
-            byte_index += 1;
-        }
-        //checks if its a 2 byte char and adds 2 to the byte index
-        else if(character == 0b11000000){
-            byte_index +=2;
-            //adds one to i so it skips the next one
-            i += 1;
-        }
-        //checks if its a 3 byte char and adds 3 to the index
-        else if(character == 0b11100000){
-            byte_index +=3;
-            //skips the next 2
-            i += 2;
-        }
-        //checks if its a 4 byte char
-        else if(character == 0b11110000){
-            byte_index +=4;
-            //skips the next 3
-            i += 3;
-        }
-        //if it is not recognized it returns -1
-        else{
+    for (int i = 0; i < cpi; i++) {
+        int width = width_from_start_byte(str[byte_index]);
+        if (width < 1){
             return -1;
         }
+        //moves to the next codepoint
+        byte_index += width; 
     }
-    
     return byte_index;
 }
 
@@ -140,12 +93,7 @@ void utf8_substring(char str[], int32_t cpi_start, int32_t cpi_end, char result[
     
     //checks to make sure that cpi start is less than end and both are positive
     if(cpi_start >= 0 && cpi_end >= 0 && cpi_start < cpi_end){
-        for (int i = 0; i < end; i++) {
-            //rewrites result to be the substring starting from the byteindexstart and adding one
-            //as the loop goes
-            result[i] = str[byte_index_start + i];
-        }
-        //ends the char array with the null terminator
+        strncpy(result,str + byte_index_start, end);
         result[end] = '\0';
     }
     else{
@@ -159,15 +107,11 @@ int32_t codepoint_at(char str[], int32_t cpi){
     int byte_index = codepoint_index_to_byte_index(str,cpi);
     int32_t width = width_from_start_byte(str[byte_index]);
 
-    //if the width is 1 then return the codepoint of just that one
     if(width == 1){
         return str[byte_index];
     }
     else if(width == 2){
-        //if the width is 2 then remove the first 3 bits then left shift the bits 6 spaces for the first byte
-        //does the same thing for the second byte
-        //the bitwise or | combines it into 11 bits 
-        codepoint = ((str[byte_index] & 0b00011111) << 6) | (str[byte_index + 1] & 0b00111111);
+        codepoint = codepoint = ((str[byte_index] & 0b00011111) << 6) | (str[byte_index + 1] & 0b00111111);
         return codepoint;
     }
     else if(width == 3){
@@ -184,7 +128,7 @@ int32_t codepoint_at(char str[], int32_t cpi){
     return -1;
 }
 
-char is_animal_emoji_at(char str[], int32_t cpi){
+int8_t is_animal_emoji_at(char str[], int32_t cpi){
     int32_t codepoint = codepoint_at(str,cpi);
     //if the codepoint is between the rat and chipmunk emoji or crab and dog then return true
     if ((codepoint >= 0x1F400 && codepoint <= 0x1F43E) || (codepoint >= 0x1F980 && codepoint <= 0x1F99F)) {
@@ -208,6 +152,9 @@ int main(){
     if(length > 0 && input_string[length-1] == '\n'){
         input_string[length - 1] ='\0';
     }
+
+    char capped_string[100];
+    strcpy(capped_string, input_string);
     
     //by defualt it is not ascii and if it is then set it to true
     //this changes the number value to a string
@@ -219,8 +166,8 @@ int main(){
     printf("Valid ASCII: %s\n",is_true);
 
 
-    capitalize_ascii(input_string);
-    printf("Uppercased ASCII: %s\n",input_string );
+    capitalize_ascii(capped_string);
+    printf("Uppercased ASCII: %s\n",capped_string );
 
     //byte_length is used a couple times for loops so having it set improves efficiency a little
     int byte_length = strlen(input_string);
