@@ -1,0 +1,3 @@
+Valid ASCII: false
+Uppercased ASCII: EL NOMBRE DE MI ABUELO 👴 ES JOSé LUIS SOSA ARREOLA Y MI GATA SE LLAMA ALASKA 🐈.
+Animal Emojis: 🐈
