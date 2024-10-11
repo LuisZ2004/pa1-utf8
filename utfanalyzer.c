@@ -93,11 +93,14 @@ void utf8_substring(char str[], int32_t cpi_start, int32_t cpi_end, char result[
     
     //checks to make sure that cpi start is less than end and both are positive
     if(cpi_start >= 0 && cpi_end >= 0 && cpi_start < cpi_end){
-        strncpy(result,str + byte_index_start, end);
-        result[end] = '\0';
+        int i =0;
+        for(int j =byte_index_start; j < byte_index_end; j++){
+            result[i] = str[j];
+            i++;
+        }
+        result[i] = '\0';
     }
     else{
-        //empty string if the conditions are not met
         result[0] = '\0';
     }
 }
