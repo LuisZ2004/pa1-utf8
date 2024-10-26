@@ -134,7 +134,7 @@ int32_t codepoint_at(char str[], int32_t cpi){
 int8_t is_animal_emoji_at(char str[], int32_t cpi){
     int32_t codepoint = codepoint_at(str,cpi);
     //if the codepoint is between the rat and chipmunk emoji or crab and dog then return true
-    if ((codepoint >= 0x1F400 && codepoint <= 0x1F43E) || (codepoint >= 0x1F980 && codepoint <= 0x1F99F)) {
+    if ((codepoint >= 0x1F400 && codepoint <= 0x1F43F) || (codepoint >= 0x1F980 && codepoint <= 0x1F9AE)) {
         return 1;
     }
     //false by default
@@ -142,6 +142,40 @@ int8_t is_animal_emoji_at(char str[], int32_t cpi){
     
 }
 
+void next_utf8_char(char str[], int32_t cpi, char result[]){
+    int32_t codepoint = codepoint_at(str, cpi);
+    codepoint += 1;
+
+    if (codepoint <= 0x7F) {
+        //1 byte character just add 1 and end
+        result[0] = (char)codepoint;
+        result[1] = '\0';
+    }
+    else if (codepoint <= 0x7FF) {
+        // gets the bytes in place and ends string
+        result[0] = (char)(0b11000000 | (codepoint >> 6));
+        result[1] = (char)(0b10000000 | (codepoint & 0b00111111));
+        result[2] = '\0';
+    }
+    else if (codepoint <= 0xFFFF) {
+        g
+        result[0] = (char)(0b11100000 | (codepoint >> 12));
+        result[1] = (char)(0b10000000 | ((codepoint >> 6) & 0b00111111));
+        result[2] = (char)(0b10000000 | (codepoint & 0b00111111));
+        result[3] = '\0';
+    }
+    else if (codepoint <= 0x10FFFF) {
+ 
+        result[0] = (char)(0b11110000 | (codepoint >> 18));
+        result[1] = (char)(0b10000000 | ((codepoint >> 12) & 0b00111111));
+        result[2] = (char)(0b10000000 | ((codepoint >> 6) & 0b00111111));
+        result[3] = (char)(0b10000000 | (codepoint & 0b00111111));
+        result[4] = '\0';
+    } else {
+        //if the codepoint does not have a matching lead then just have a empty string
+        result[0] = '\0';
+    }
+}
 
 
 int main(){ 
@@ -214,6 +248,10 @@ int main(){
             printf("%s", emojis);
         }
     }
+    char next_char_result[100];
+    int32_t idx = 3;
+    next_utf8_char(input_string, idx, next_char_result);
+    printf("Next Character of Codepoint at Index 3: %s\n",next_char_result);
     printf("\n");
     return 0;
 }
