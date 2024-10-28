@@ -244,7 +244,7 @@ int main(){
             char emojis[5];
             //substring writes the emoji into the emoji[] from the inputstring
             utf8_substring(input_string,i, i+1, emojis);
-            printf("%s", emojis);
+            printf("%s\n", emojis);
         }
     }
     char next_char_result[100];
