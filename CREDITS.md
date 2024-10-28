@@ -16,3 +16,4 @@ also for my capitalize ascii function i had written it almost exactly how it is 
 
 this is how i added quotes in the strings https://stackoverflow.com/questions/11772291/how-can-i-print-a-quotation-mark-in-c
 
+The article I used for overlong encodings and also used the information for the other questions https://kevinboone.me/overlong.html 

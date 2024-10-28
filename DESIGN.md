@@ -18,8 +18,15 @@ The first byte, 11100000, can be read as E0, the second, 10000000 as 80, and the
  Therefore the two byte representation would be 11000000 10100001 or 0xc0a1. Repeating this for the 4 byte representation, the bytes would be 11110000 100000000 100000000 10100001 which would be 0xf08080a1. The original and 3 other ways of encoding this character are 0x21, 0xc0a1 ,0xe080a1, 0xf08080a1.
 
 Give an example of a character that has exactly three encodings (but not four, like the one in the previous example does)
-
+A 1 byte character can only encode up to 0xff or 0b11111111 so if we need to encode more bits, multiple bytes are needed.
+A character with bits 1111 1111 1 that need to be encoded would require at least two bytes and thus have exactly 3 ways of encoding. 
+11000111 10111111
+11100000 100000111 10111111
+11100000 100000000 10000111 10111111
+These would be the 3 ways of encoding the character. 
 
 
 
 What are some problems with having these multiple encodings, especially for ASCII characters? A web search for “overlong UTF-8 encoding” may be useful here.
+
+Having multiple encodings for multiple characters, especially ascii, leads to confusion on which character you are trying to represent. Assuming that the character is always in its shortest form and is a way to mitigate this however if for whatever reason it wasnt, issues could arise with compatibility between both formats. Also, security issues may appear if you account for overlong encoding beacause if an overlong utf-8 character is mapped to another then this leads to the possibility an incorrect password is correct because of the chance that the character's overlong encoding was accounted for. 
