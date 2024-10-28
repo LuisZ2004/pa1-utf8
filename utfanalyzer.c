@@ -158,7 +158,6 @@ void next_utf8_char(char str[], int32_t cpi, char result[]){
         result[2] = '\0';
     }
     else if (codepoint <= 0xFFFF) {
-        g
         result[0] = (char)(0b11100000 | (codepoint >> 12));
         result[1] = (char)(0b10000000 | ((codepoint >> 6) & 0b00111111));
         result[2] = (char)(0b10000000 | (codepoint & 0b00111111));
